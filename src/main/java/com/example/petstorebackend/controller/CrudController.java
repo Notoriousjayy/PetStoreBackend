@@ -1,8 +1,12 @@
 package com.example.petstorebackend.controller;
 
 import com.example.petstorebackend.domain.Address;
+import com.example.petstorebackend.domain.Customer;
+import com.example.petstorebackend.domain.Order;
 import com.example.petstorebackend.domain.Pet;
+import com.example.petstorebackend.service.PetService;
 import com.example.petstorebackend.util.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -10,9 +14,32 @@ import reactor.core.publisher.Mono;
 public class CrudController {
 
     private final PetService petService;
+    private final Customer customerService;
+    private final Order storeService;
+
+    @Autowired
+    public CrudController(PetService petService, Customer customerService, Order storeService) {
+        this.petService = petService;
+        this.customerService = customerService;
+        this.storeService = storeService;
+    }
 
     public CrudController(PetService petService) {
         this.petService = petService;
+        this.customerService = null;
+        this.storeService = null;
+    }
+
+    public CrudController(Customer customerService) {
+        this.petService = null;
+        this.customerService = customerService;
+        this.storeService = null;
+    }
+
+    public CrudController(Order storeService) {
+        this.petService = null;
+        this.customerService = null;
+        this.storeService = storeService;
     }
 
     // Add a new pet to the store

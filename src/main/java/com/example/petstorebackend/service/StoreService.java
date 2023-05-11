@@ -3,6 +3,7 @@ package com.example.petstorebackend.service;
 import com.example.petstorebackend.domain.Order;
 import com.example.petstorebackend.repository.StoreRepository;
 import com.example.petstorebackend.util.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,6 +15,7 @@ import java.util.function.LongSupplier;
 import static com.example.petstorebackend.util.Result.FAIL;
 import static com.example.petstorebackend.util.Result.SUCCESS;
 
+@Service
 public class StoreService {
     private final StoreRepository orderRepository;
     private final LongSupplier getEpochSecond = () -> Instant.now()

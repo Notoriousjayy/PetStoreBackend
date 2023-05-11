@@ -1,6 +1,7 @@
 package com.example.petstorebackend.repository;
 
 import com.example.petstorebackend.domain.Customer;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.async.SdkPublisher;
 import software.amazon.awssdk.enhanced.dynamodb.*;
@@ -9,6 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.PagePublisher;
 import java.util.concurrent.CompletableFuture;
 
 import static software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.keyEqualTo;
+@Repository
 public class CustomerRepository {
     private final DynamoDbAsyncTable<Customer> customerDynamoDbAsyncTable;
 

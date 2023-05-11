@@ -16,6 +16,7 @@ import java.util.function.LongSupplier;
 import static com.example.petstorebackend.util.Result.FAIL;
 import static com.example.petstorebackend.util.Result.SUCCESS;
 
+@Service
 public class PetService {
 
     private final PetRepository petRepository;
