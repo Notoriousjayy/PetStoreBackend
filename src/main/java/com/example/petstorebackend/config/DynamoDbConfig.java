@@ -1,6 +1,7 @@
 package com.example.petstorebackend.config;
 
 import com.example.petstorebackend.domain.Customer;
+import com.example.petstorebackend.domain.Order;
 import com.example.petstorebackend.domain.Pet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,5 +44,10 @@ public class DynamoDbConfig {
     @Bean
     public DynamoDbAsyncTable<Customer> getDynamoDbAsyncCustomer(DynamoDbEnhancedAsyncClient asyncClient) {
         return asyncClient.table(Customer.class.getSimpleName(), TableSchema.fromBean(Customer.class));
+    }
+
+    @Bean
+    public DynamoDbAsyncTable<Order> getDynamoDbAsyncOrder(DynamoDbEnhancedAsyncClient asyncClient) {
+        return asyncClient.table(Order.class.getSimpleName(), TableSchema.fromBean(Order.class));
     }
 }
