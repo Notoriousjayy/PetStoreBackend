@@ -20,7 +20,7 @@ public class Customer   {
 
   @JsonProperty("address")
   @Valid
-  private List<Address> address = null;
+  private Address address = null;
 
   private Long createdTimeStamp;
 
@@ -63,18 +63,18 @@ public class Customer   {
     this.username = username;
   }
 
-  public Customer address(List<Address> address) {
+  public Customer address(Address address) {
     this.address = address;
     return this;
   }
-
-  public Customer addAddressItem(Address addressItem) {
-    if (this.address == null) {
-      this.address = new ArrayList<Address>();
-    }
-    this.address.add(addressItem);
-    return this;
-  }
+//
+//  public Customer addAddressItem(Address addressItem) {
+//    if (this.address == null) {
+//      this.address = new ArrayList<Address>();
+//    }
+//    this.address.add(addressItem);
+//    return this;
+//  }
 
   /**
    * Get address
@@ -82,11 +82,11 @@ public class Customer   {
    **/
   @Schema(description = "")
       @Valid
-    public List<Address> getAddress() {
+    public Address getAddress() {
     return address;
   }
 
-  public void setAddress(List<Address> address) {
+  public void setAddress(Address address) {
     this.address = address;
   }
 

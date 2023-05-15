@@ -1,24 +1,28 @@
 package com.example.petstorebackend.controller;
 
-import com.example.petstorebackend.domain.Address;
-import com.example.petstorebackend.domain.Customer;
-import com.example.petstorebackend.domain.Order;
-import com.example.petstorebackend.domain.Pet;
+import com.example.petstorebackend.domain.*;
+import com.example.petstorebackend.service.CustomerService;
 import com.example.petstorebackend.service.PetService;
+import com.example.petstorebackend.service.StoreService;
 import com.example.petstorebackend.util.Result;
+import com.example.petstorebackend.util.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Map;
+
 public class CrudController {
 
     private final PetService petService;
-    private final Customer customerService;
-    private final Order storeService;
+    private final CustomerService customerService;
+    private final StoreService storeService;
 
     @Autowired
-    public CrudController(PetService petService, Customer customerService, Order storeService) {
+    public CrudController(PetService petService, CustomerService customerService, StoreService storeService) {
         this.petService = petService;
         this.customerService = customerService;
         this.storeService = storeService;
@@ -30,148 +34,158 @@ public class CrudController {
         this.storeService = null;
     }
 
-    public CrudController(Customer customerService) {
+    public CrudController(CustomerService customerService) {
         this.petService = null;
         this.customerService = customerService;
         this.storeService = null;
     }
 
-    public CrudController(Order storeService) {
+    public CrudController(StoreService storeService) {
         this.petService = null;
         this.customerService = null;
         this.storeService = storeService;
     }
 
+    // Update an existing pet
+    @PutMapping(path = "/pet", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> updatePet(@RequestBody Pet pet) {
+        return petService.updateExistingPet(pet);
+    }
+
     // Add a new pet to the store
-    @PostMapping("/pet")//C
-    public Mono<Result> savePet(@RequestBody Pet pet) {
-        return petService.createNewPet(pet);
-    }
-
-    // Updates a pet in the store with form data
-    @PostMapping("/pet/{petId}")//C
-    public Mono<Result> updatePet(@RequestBody Pet pet) {
-        return petService.createNewPet(pet);
-    }
-
-    // uploads an image
-    @PostMapping("/pet/{petId}/uploadImage")//C
-    public Mono<Result> updatePet(@RequestBody Pet pet) {
+    @PostMapping(path ="/pet", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> createPet(@RequestBody Pet pet) {
         return petService.createNewPet(pet);
     }
 
     // Finds Pets by status
-    @GetMapping("/pet/findByStatus")//R
-    public Mono<Pet> getPet(@PathVariable() String petId) {
-        return petService.getPetByPetId(petId);
+    @GetMapping(path = "/pet/findByStatus", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Pet> getPetByStatus(@RequestBody Status status) {
+        return petService.getPetByStatus(status);
     }
 
     // Finds Pets by tags
-    @GetMapping("/pet/findByTags")//R
-    public Mono<Pet> getPet(@PathVariable() String petId) {
-        return petService.getPetByPetId(petId);
+    @GetMapping(path ="/pet/findByTags", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Pet> getPetByTags(@PathVariable() List<Tag> tags) {
+        return petService.getPetByByTags(tags);
+    }
+
+
+    // Updates a pet in the store with form data
+    @PostMapping(path = "/pet/{petId}", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> updatePetById(@PathVariable("petId") String petId) {
+        return petService.updatePet(petId);
     }
 
     // Find pet by ID
-    @GetMapping("/get/{petId}")//R
-    public Mono<Pet> getPet(@PathVariable() String petId) {
+    @GetMapping(path ="/get/{petId}", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Pet> getPetById(@PathVariable("petId") String petId) {
         return petService.getPetByPetId(petId);
     }
 
-//    @PutMapping("/updatePetOrCreate")//U
-//    public Mono<Result> updateOrCreatePet(@RequestBody Pet pet) {
-//        return petService.updateExistingOrCreatePet(pet);
-//    }
-
     // Deletes a pet
-    @DeleteMapping("/pet/{petId}")//D
-    public Mono<Result> deletePet(@PathVariable() String petId) {
+    @DeleteMapping(path ="/pet/{petId}")
+    public Mono<Result> deletePet(@PathVariable("petId") String petId) {
         return petService.deletePetByPetId(petId);
     }
+    // uploads an image
+    @PostMapping(path ="/pet/{petId}/uploadImage", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> updateImage(@PathVariable("petId") String petId) {
+        return petService.updateImage(petId);
+    }
 
-//    @PutMapping("/updatePet")
-//    public Mono<Result> updatePet(@RequestBody Pet pet) {
-//        return petService.updateExistingPet(pet);
-//    }
 
-//    @GetMapping("/query/{petId}")
-//    public Mono<Address> queryPetAddress(@PathVariable() String petId) {
-//        return petService.queryAddressByPetId(petId);
-//    }
 
-    @GetMapping("/allPetList")
-    public Flux<Pet> getAllPet() {
+    @GetMapping(path ="/allPetList", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<Pet> getAllPets() {
         return petService.getPetList();
     }
 
     //=========================Store ==========================================
 
     // Returns pet inventories by status
-    @GetMapping("/store/inventory")
-    public Flux<Pet> getAllPet() {
-        return petService.getPetList();
+    @GetMapping(path ="/store/inventory", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<Map<Status, Integer>> getStoreInventory() {
+        return storeService.getStoreInventory();
     }
 
     // Place an order for a pet
-    @PostMapping("/store/order")
-    public Mono<Result> updatePet(@RequestBody Pet pet) {
-        return petService.createNewPet(pet);
+    @PostMapping(path ="/store/order", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> orderPet(@RequestBody Order order) {
+        return storeService.createNewOrder(order);
     }
 
     // Find purchase order by ID
-    @GetMapping("/store/order/{orderId}")
-    public Flux<Pet> getAllPet() {
-        return petService.getPetList();
+    @GetMapping(path ="/store/order/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Order> getOrderById(@PathVariable("orderId") String orderId) {
+        return storeService.getOrderByOrderId(orderId);
     }
 
     // Delete purchase order by ID
-    @DeleteMapping("/store/order/{orderId}")//D
-    public Mono<Result> deletePet(@PathVariable() String petId) {
-        return petService.deletePetByPetId(petId);
+    @DeleteMapping(path ="/store/order/{orderId}")
+    public Mono<Result> deleteOrder(@PathVariable("orderId") String petId) {
+        return storeService.deleteOrderByOrderId(petId);
     }
 
     //=========================Customer ==========================================
 
     // Create user
-    @PostMapping("/user")
-    public Mono<Result> updatePet(@RequestBody Pet pet) {
-        return petService.createNewPet(pet);
+    @PostMapping(path ="/user", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> createUser(@RequestBody Customer customer) {
+        return customerService.createNewCustomer(customer);
     }
 
     // Creates list of users with given input array
-    @PostMapping("/user/createWithList")
-    public Mono<Result> updatePet(@RequestBody Pet pet) {
-        return petService.createNewPet(pet);
+    @PostMapping(path ="/user/createWithList", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<Customer> createUserList(@RequestBody List<Customer> users) {
+        return customerService.createUserList(users);
     }
 
     // Logs user into the system
-    @GetMapping("/user/login")
-    public Flux<Pet> getAllPet() {
-        return petService.getPetList();
+    @GetMapping(path ="/user/login", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> login(String username, String password) {
+        return customerService.login(username, password);
     }
 
-    // Logs out current logged in user session
-    @GetMapping("/user/logout")
-    public Flux<Pet> getAllPet() {
-        return petService.getPetList();
+    // Logs out current logged-in user session
+    @GetMapping(path ="/user/logout", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> logout() {
+        return customerService.logout();
     }
 
-    // Get user by user name
-    @GetMapping("/user/{username}")
-    public Flux<Pet> getAllPet() {
-        return petService.getPetList();
+    // Get user by username
+    @GetMapping(path ="/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Customer> getUserByUsername(@PathVariable("username") String username) {
+        return customerService.getUserByUsername(username);
     }
 
     // Update user
-    @PutMapping("/user/{username}")
-    public Mono<Result> updatePet(@RequestBody Pet pet) {
-        return petService.updateExistingPet(pet);
+    @PutMapping(path ="/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Result> updateUserByUsername(@PathVariable("username") String username) {
+        return customerService.updateUserByUsername(username);
     }
 
     // Delete user
-    @DeleteMapping("/user/{username}")
-    public Mono<Result> deletePet(@PathVariable() String petId) {
-        return petService.deletePetByPetId(petId);
+    @DeleteMapping(path ="/user/{username}")
+    public Mono<Result> deleteUserByUsername(@PathVariable("username") String username) {
+        return customerService.deleteUserByUsername(username);
     }
 
 

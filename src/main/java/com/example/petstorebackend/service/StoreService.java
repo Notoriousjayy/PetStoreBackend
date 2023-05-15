@@ -3,13 +3,15 @@ package com.example.petstorebackend.service;
 import com.example.petstorebackend.domain.Order;
 import com.example.petstorebackend.repository.StoreRepository;
 import com.example.petstorebackend.util.Result;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.petstorebackend.util.Status;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.Objects;
+import org.threeten.bp.OffsetDateTime;
 import java.util.function.LongSupplier;
 
 import static com.example.petstorebackend.util.Result.FAIL;
@@ -18,15 +20,15 @@ import static com.example.petstorebackend.util.Result.SUCCESS;
 @Service
 public class StoreService {
     private final StoreRepository orderRepository;
-    private final LongSupplier getEpochSecond = () -> Instant.now()
-            .getEpochSecond();
+    private final OffsetDateTime getEpochSecond = null;
 
     public StoreService(StoreRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 
+
     public Mono<Result> createNewOrder(Order order) {
-        order.shipDate(getEpochSecond.getAsLong()); // change to order ship date
+        order.shipDate(getEpochSecond.now()); // change to order ship date
         return Mono.fromFuture(orderRepository.save(order))
                 .thenReturn(SUCCESS)
                 .onErrorReturn(FAIL);
@@ -47,6 +49,13 @@ public class StoreService {
     }
 
     public Flux<Order> getOrderList() {
+        return Flux.from(orderRepository.getAllOrder()
+                        .items())
+                .onErrorReturn(new Order());
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+    public Flux<Map<Status, Integer>> getStoreInventory() {
         return Flux.from(orderRepository.getAllOrder()
                         .items())
                 .onErrorReturn(new Order());

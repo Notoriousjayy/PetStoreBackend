@@ -3,13 +3,16 @@ package com.example.petstorebackend.service;
 
 import com.example.petstorebackend.domain.Address;
 import com.example.petstorebackend.domain.Pet;
+import com.example.petstorebackend.domain.Tag;
 import com.example.petstorebackend.repository.PetRepository;
 import com.example.petstorebackend.util.Result;
+import com.example.petstorebackend.util.Status;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.LongSupplier;
 
@@ -41,13 +44,6 @@ public class PetService {
                 .onErrorReturn(new Pet());
     }
 
-//    public Mono<Address> queryAddressByPetId(String petId) {
-//        return Mono.from(petRepository.getPetAddress(petId))
-//                .map(Pet::getAddress)
-//                .doOnSuccess(Objects::requireNonNull)
-//                .onErrorReturn(new Address());
-//    }
-
     public Mono<Result> updateExistingPet(Pet pet) {
         pet.setCreatedTimeStamp(getEpochSecond.getAsLong());
         return Mono.fromFuture(
@@ -77,5 +73,32 @@ public class PetService {
         return Flux.from(petRepository.getAllPet()
                         .items())
                 .onErrorReturn(new Pet());
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+    public Mono<Pet> getPetByStatus(Status status) {
+        return Mono.fromFuture(petRepository.getPetByID(status))
+                .doOnSuccess(Objects::requireNonNull)
+                .onErrorReturn(new Pet());
+    }
+
+    public Mono<Pet> getPetByByTags(List<Tag> tags) {
+        return Mono.fromFuture(petRepository.getPetByID(tags))
+                .doOnSuccess(Objects::requireNonNull)
+                .onErrorReturn(new Pet());
+    }
+
+    public Mono<Result> updatePet(String petId) {
+        pet.setCreatedTimeStamp(getEpochSecond.getAsLong());
+        return Mono.fromFuture(petRepository.updatePet(petId))
+                .thenReturn(SUCCESS)
+                .onErrorReturn(FAIL);
+    }
+
+    public Mono<Result> updateImage(String petId) {
+        pet.setCreatedTimeStamp(getEpochSecond.getAsLong());
+        return Mono.fromFuture(petRepository.updatePet(petId))
+                .thenReturn(SUCCESS)
+                .onErrorReturn(FAIL);
     }
 }

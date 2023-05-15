@@ -39,7 +39,7 @@ public class CustomerService {
                 .onErrorReturn(new Customer());
     }
 
-    public Mono<List<Address>> queryAddressByCustomerId(String customerId) {
+    public Mono<Address> queryAddressByCustomerId(String customerId) {
         return Mono.from(customerRepository.getCustomerAddress(customerId))
                 .map(Customer::getAddress)
                 .doOnSuccess(Objects::requireNonNull)
@@ -74,5 +74,49 @@ public class CustomerService {
         return Flux.from(customerRepository.getAllCustomer()
                         .items())
                 .onErrorReturn(new Customer());
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+    // NEED TO IMPLEMENT
+    public Flux<Customer> createUserList(List<Customer> customers) {
+        customers.setCreatedTimeStamp(getEpochSecond.getAsLong());
+        return Mono.fromFuture(customerRepository.save(customers))
+                .thenReturn(SUCCESS)
+                .onErrorReturn(FAIL);
+    }
+
+    public Mono<Result> login(String username, String password) {
+        return Mono.fromFuture(customerRepository.deleteCustomerById(customerId))
+                .doOnSuccess(Objects::requireNonNull)
+                .thenReturn(SUCCESS)
+                .onErrorReturn(FAIL);
+    }
+
+    public Mono<Result> logout() {
+        return Mono.fromFuture(customerRepository.deleteCustomerById(customerId))
+                .doOnSuccess(Objects::requireNonNull)
+                .thenReturn(SUCCESS)
+                .onErrorReturn(FAIL);
+    }
+
+    public Mono<Customer> getUserByUsername(String username) {
+        username.setCreatedTimeStamp(getEpochSecond.getAsLong());
+        return Mono.fromFuture(customerRepository.updateCustomer(username))
+                .thenReturn(SUCCESS)
+                .onErrorReturn(FAIL);
+    }
+
+    public Mono<Result> updateUserByUsername(String username) {
+        username.setCreatedTimeStamp(getEpochSecond.getAsLong());
+        return Mono.fromFuture(customerRepository.updateCustomer(username))
+                .thenReturn(SUCCESS)
+                .onErrorReturn(FAIL);
+    }
+
+    public Mono<Result> deleteUserByUsername(String username) {
+        return Mono.fromFuture(customerRepository.deleteCustomerById(username))
+                .doOnSuccess(Objects::requireNonNull)
+                .thenReturn(SUCCESS)
+                .onErrorReturn(FAIL);
     }
 }

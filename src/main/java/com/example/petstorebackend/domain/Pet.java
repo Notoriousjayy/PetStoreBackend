@@ -16,7 +16,7 @@ import javax.validation.constraints.*;
 
 public class Pet   {
   @JsonProperty("id")
-  private Long id = null;
+  private String id = null;
 
   @JsonProperty("name")
   private String name = null;
@@ -71,7 +71,7 @@ public class Pet   {
   @JsonProperty("status")
   private StatusEnum status = null;
 
-  public Pet id(Long id) {
+  public Pet id(String id) {
     this.id = id;
     return this;
   }
@@ -87,7 +87,7 @@ public class Pet   {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(String id) {
     this.id = id;
   }
 
